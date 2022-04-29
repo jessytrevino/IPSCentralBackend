@@ -20,11 +20,12 @@ class User {
 }
 
 let userInfo = {};
+let projInfo = {};
 
 let path = '/Users/robertasaldana/Downloads/equipos.xlsx';
 //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
 readXlsxFile(path).then((rows) => {
-    rows.shift();
+    rows.shift(); //se salta los headers
 
     rows.forEach((col) => {
 
@@ -43,16 +44,12 @@ readXlsxFile(path).then((rows) => {
                 nonbill = nonbill + col[i];
             }
         }
-        // console.log(nonbill);
-        // console.log(bill);
-        // console.log(totalHr);
-
 
         totalHr = bill + nonbill;
 
         const user = new User(col[0], col[1], col[2], col[3], bill, nonbill, totalHr);
-        //console.log(col[2]);
 
+        // agregar a users a la lista de UserInfo
         if (user.username != "Totals"){
             if (userInfo[user.username]){
                 userInfo[user.username].push(user);
@@ -60,10 +57,25 @@ readXlsxFile(path).then((rows) => {
                 userInfo[user.username] = [user];
             }
         }
+
+        // agregar proyectos a la lista de ProjInfo
+        if (user.username != "Totals"){
+            if (projInfo[user.projectname]) {
+                projInfo[user.projectname].push(user);
+            } else {
+                projInfo[user.projectname] = [user];
+            }
+        }
+
         
     });
-    console.log(userInfo);
+    console.log(projInfo);
 });
+
+// userInfo.forEach(user) => {
+
+// }
+
 
 
 // let array = {};
@@ -73,7 +85,7 @@ readXlsxFile(path).then((rows) => {
 // array["roberta"] = ["Hola"];
 // array["roberta"].push("Bye");
 
-// console.log(array["eduardo"].length);
+// console.log(array);
 
 // let cont = 0;
 // // array.foreach((dato) => {
