@@ -11,50 +11,79 @@ class User {
         this.billHrs = billHrs;
         this.nonBillHrs = nonBillHrs;
         this.totalHrs = totalHrs;
+        if (this.projectlead == this.username){
+            this.role = "Leader";
+        } else {
+            this.role = "Peer";
+        }
     }
 }
 
-let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360.xlsx';
-readXlsxFile(path).then(rows) => {
+let userInfo = {};
+
+let path = '/Users/robertasaldana/Downloads/equipos.xlsx';
+//let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
+readXlsxFile(path).then((rows) => {
     rows.shift();
 
-    rows.foreach((col) => {
-        //horas
-        //bil = 4-9 empezando en 0
-        //nonbill = 10 - 15 
-        rows[4]
+    rows.forEach((col) => {
+
         let bill = 0;
         let nonbill = 0;
+        let totalHr = 0;
+
         for (let i = 4; i < 10; i++) {
-            bill = bill + rows[i];
+            if (col[i] != '-'){
+                bill = bill + col[i];
+            }
+            
         }
         for (let i = 10; i < 15; i++) {
-            nonbill = nonbill + rows[i];
+            if (col[i] != '-'){
+                nonbill = nonbill + col[i];
+            }
         }
+        // console.log(nonbill);
+        // console.log(bill);
+        // console.log(totalHr);
 
-        col[4]
-        col[0]
+
+        totalHr = bill + nonbill;
+
+        const user = new User(col[0], col[1], col[2], col[3], bill, nonbill, totalHr);
+        //console.log(col[2]);
+
+        if (user.username != "Totals"){
+            if (userInfo[user.username]){
+                userInfo[user.username].push(user);
+            } else {
+                userInfo[user.username] = [user];
+            }
+        }
+        
     });
-}
+    console.log(userInfo);
+});
 
-let array = {};
 
-array["eduardo"] = ["Hola"];
-array["eduardo"].push("Bye");
-array["roberta"] = ["Hola"];
-array["roberta"].push("Bye");
+// let array = {};
 
-console.log(array["eduardo"].length);
+// array["eduardo"] = ["Hola"];
+// array["eduardo"].push("Bye");
+// array["roberta"] = ["Hola"];
+// array["roberta"].push("Bye");
 
-let cont = 0;
-// array.foreach((dato) => {
-//     dato;
-//     console.log(cont++);
-// });
+// console.log(array["eduardo"].length);
 
-for (let i = 0; i<array.length; i++){
-    console.log(i);
-}
+// let cont = 0;
+// // array.foreach((dato) => {
+// //     dato;
+// //     console.log(cont++);
+// // });
+
+// for (let i = 0; i<array.length; i++){
+//     console.log(i);
+// }
 
 // UserInfo = todo los obj de usuarios
 // ProjInfo = lista de usuarios y todos los usuarios en ese proj
