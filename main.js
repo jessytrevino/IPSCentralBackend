@@ -21,6 +21,7 @@ class User {
 
 let userInfo = {};
 let projInfo = {};
+let teams = {};
 
 let path = '/Users/robertasaldana/Downloads/equipos.xlsx';
 //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
@@ -69,12 +70,45 @@ readXlsxFile(path).then((rows) => {
 
         
     });
-    console.log(projInfo);
+    return userInfo;
+    return projInfo;
+    //console.log(projInfo);
 });
 
-// userInfo.forEach(user) => {
+console.log(userInfo);
 
-// }
+
+
+Object.keys(userInfo).forEach((user) => { // itera por persona
+    user.forEach((entry) => { // itera por cada entry de cada persona
+        if (entry.totalHrs >= 40) { // checamos si el usuario en ese proj tuvo mas de 40 hrs
+            projInfo[entry.projectname].forEach((userInProj) => { // itera por usuario en cada proj    
+                if (userInProj.username != user.username && userInProj.totalHrs >= 40) { // checamos si el usuario que estamos evaluando es diferente al del equipo y 
+                    teams[user.username].forEach((usuario) => { // checamos si usuario ya esta en team
+                        if (team[user.username].include(usuario.username)){ // 
+
+                        }
+                    })
+                }
+            })
+        }
+        
+    })
+
+})
+
+
+/*
+funcionamiento del include
+    let array1 = {};
+    array1[1] = [2];
+    array1[1].push(4);
+    array1[1].push(5);
+    console.log(array1);
+
+    console.log(array1[1].includes(6));
+*/
+
 
 
 
