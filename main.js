@@ -25,7 +25,8 @@ let teams = {};
 
 let path = '/Users/robertasaldana/Downloads/equipos.xlsx';
 //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
-readXlsxFile(path).then((rows) => {
+
+[userInfo, projInfo] = await readXlsxFile(path).then(async (rows) => {
     rows.shift(); //se salta los headers
 
     rows.forEach((col) => {
@@ -73,12 +74,13 @@ readXlsxFile(path).then((rows) => {
     return userInfo;
     return projInfo;
     //console.log(projInfo);
+    return Promise.all([userInfo, projInfo]);
 });
 
 console.log(userInfo);
 
 
-
+/*
 Object.keys(userInfo).forEach((user) => { // itera por persona
     user.forEach((entry) => { // itera por cada entry de cada persona
         if (entry.totalHrs >= 40) { // checamos si el usuario en ese proj tuvo mas de 40 hrs
@@ -96,6 +98,7 @@ Object.keys(userInfo).forEach((user) => { // itera por persona
     })
 
 })
+*/
 
 
 /*
