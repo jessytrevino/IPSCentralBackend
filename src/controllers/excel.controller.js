@@ -1,6 +1,7 @@
 const db = require("../models");
 const Tutorial = db.tutorials; // como le hacemos? db.tutorials es el modelo. como le hariamos con 7 modelos?
 const readXlsxFile = require("read-excel-file/node");
+const { type } = require("express/lib/response");
 //const upload = async (req, res) => {
 //   try {
 //     if (req.file == undefined) {
@@ -60,16 +61,31 @@ class User {
 }
 
 const upload = async(req, res) => {
+  class User {
+    constructor(clientname, projectname, projectlead, username, billHrs, nonBillHrs, totalHrs) {
+        this.clientname = clientname;
+        this.projectname = projectname;
+        this.projectlead = projectlead;
+        this.username = username;
+        this.billHrs = billHrs;
+        this.nonBillHrs = nonBillHrs;
+        this.totalHrs = totalHrs;
+        if (this.projectlead == this.username){
+            this.role = "Leader";
+        } else {
+            this.role = "Peer";
+        }
+    }
+  }
 
-
-  let userInfo = {};
+  let userInfo = [];
   let projInfo = {};
   let teams = {};
 
-  let path = '/Users/robertasaldana/Downloads/equipos.xlsx';
+  let path = '/Users/robertasaldana/Downloads/equipos.xlsx';//preguntar dsp path del folder de resoures + nombre del arch
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
 
-  [userInfo, projInfo] = await readXlsxFile(path).then(async (rows) => {
+readXlsxFile(path).then((rows) => {
       rows.shift(); //se salta los headers
 
       rows.forEach((col) => {
@@ -114,34 +130,49 @@ const upload = async(req, res) => {
 
           
       });
-      return userInfo;
-      return projInfo;
       //console.log(projInfo);
-      return Promise.all([userInfo, projInfo]);
+
+      
+      //return Promise.all([userInfo, projInfo]);
+
+      /*userInfo.forEach((user) => { // itera por persona
+        user.forEach((entry) => { // itera por cada entry de cada persona
+            if (entry.totalHrs >= 40) { // checamos si el usuario en ese proj tuvo mas de 40 hrs
+                projInfo[entry.projectname].forEach((userInProj) => { // itera por usuario en cada proj    
+                    if (userInProj.username != user.username && userInProj.totalHrs >= 40) { // checamos si el usuario que estamos evaluando es diferente al del equipo y 
+                        //teams[user.username].forEach((usuario) => { // checamos si usuario ya esta en team
+                        if (!teams[user.username]){ // si el equipo todavía no existe lo creamos y agregamos el usuario
+                          teams[user.username] = [userInProj];
+                        } else {
+                          if (team[user.username].include(userInProj.username)){ // 
+                            if (teams[user.username].role != userInProj.role){
+                              teams[user.username].push(userInProj);
+                            } // si rol es igual entonces no se agrega
+                          }
+                          else {
+                            teams[user.username].push(userInProj);
+                            //se agrega
+                          }
+                        }
+                    }
+                })
+            }
+            
+        })
+  
+    })*/
+    console.log(typeof(userInfo))
+    userInfo.forEach(x =>{
+      console.log(x);
+    })
+    console.log(teams)
   });
 
-  console.log(userInfo);
+  // console.log(userInfo);
+  // userInfo.forEach(user => {
+  //     console.log(user);
+  //   })
 
-
-  /*
-  Object.keys(userInfo).forEach((user) => { // itera por persona
-      user.forEach((entry) => { // itera por cada entry de cada persona
-          if (entry.totalHrs >= 40) { // checamos si el usuario en ese proj tuvo mas de 40 hrs
-              projInfo[entry.projectname].forEach((userInProj) => { // itera por usuario en cada proj    
-                  if (userInProj.username != user.username && userInProj.totalHrs >= 40) { // checamos si el usuario que estamos evaluando es diferente al del equipo y 
-                      teams[user.username].forEach((usuario) => { // checamos si usuario ya esta en team
-                          if (team[user.username].include(usuario.username)){ // 
-
-                          }
-                      })
-                  }
-              })
-          }
-          
-      })
-
-  })
-  */
 
 
     console.log("inside the file saving part");
