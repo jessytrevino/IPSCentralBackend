@@ -83,12 +83,20 @@ const upload = async(req, res) => {
   let teams = [];
   let orphans = [];
 
-  let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
+  //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
+  //? Cual es el nombre del archivo?
+  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
+  
 
 readXlsxFile(path).then((rows) => {
-      rows.shift(); //se salta los headers
+      //se salta los headers
+      rows.shift(); 
+      rows.shift();
+      rows.shift();
 
+
+      // leer los datos y agregaros a userInfo
       rows.forEach((col) => {
 
           let bill = 0;
@@ -101,7 +109,7 @@ readXlsxFile(path).then((rows) => {
               }
               
           }
-          for (let i = 10; i < 15; i++) {
+          for (let i = 10; i < 16; i++) {
               if (col[i] != '-'){
                   nonbill = nonbill + col[i];
               }
@@ -131,59 +139,63 @@ readXlsxFile(path).then((rows) => {
 
           
       });
-      //console.log(projInfo);
 
-      
-      //return Promise.all([userInfo, projInfo]);
-      console.log("fuera del for");
-      
-      console.log(userInfo);
-      console.log(userInfo.length);
-      console.log("fuera del for");
-
-      userInfo.forEach(x =>{
-        console.log("hola");
-         console.log(x);
-      })
-      console.log(userInfo.length);
-
-      userInfo.forEach((user) => { // itera por persona
-        console.log("dentro del for");
-        user.forEach((entry) => { // itera por cada entry de cada persona
-          console.log("dentro del 2for");
-            if (entry.totalHrs >= 40) { // checamos si el usuario en ese proj tuvo mas de 40 hrs
-                projInfo[entry.projectname].forEach((userInProj) => { // itera por usuario en cada proj    
-                    if (userInProj.username != user.username && userInProj.totalHrs >= 40) { // checamos si el usuario que estamos evaluando es diferente al del equipo y 
-                        //teams[user.username].forEach((usuario) => { // checamos si usuario ya esta en team
-                        if (!teams[user.username]){ // si el equipo todavía no existe lo creamos y agregamos el usuario
-                          teams[user.username] = [userInProj];
-                        } else {
-                          if (team[user.username].include(userInProj.username)){ // 
-                            console.log("dentro del 2if");
-                            if (teams[user.username].role != userInProj.role){
-                              teams[user.username].push(userInProj);
-                            } // si rol es igual entonces no se agrega
+      // iteramos todo user info 
+        //key = nombre 
+        //value = todo el obj de user
+      for(const[key, value]of Object.entries(userInfo)){
+        // itera por cada objeto (entry) de cada persona
+        value.forEach((entry) => {
+            // checa si el usuario(key) en cada proj(entry) tuvo mas de 40hrs
+            if (entry.totalHrs >= 40) {
+                // dentro de ese proj(entry) itera por cada usuario
+                projInfo[entry.projectname].forEach((userInProj) => { 
+                    // checamos si el usuario(key) es diferente al userInProj y si el userInProj SÍ cumplió las 40 hrs
+                    if (userInProj.username != key && userInProj.totalHrs >= 40) {
+                        // si el equipo de usuario(key) todavía no exsite lo creamos y agregamos userInProj
+                        if (!teams[key]){ 
+                          teams[key] = [userInProj];
+                        } 
+                        else {
+                          // checamos si userInProj ya esta en el equipo con el mismo rol
+                          if (teams[key].includes(userInProj.username)){
+                            // si rol es igual entonces no se agrega
+                            if (teams[key].role != userInProj.role){
+                              teams[key].push(userInProj);
+                            } 
                           }
+                          // si todavía no esta en el equipo lo agregamos
                           else {
-                            teams[user.username].push(userInProj);
-                            //se agrega
+                            teams[key].push(userInProj);
+
                           }
                         }
                     }
                 })
-            } else { //tbd esto de los orphans, primero tenemos que checar si en NI UN proj cumple las horas
-              orphans[user.username] = [user]
-            }
-            
+            }            
         })
-  
-    })
-    // console.log(typeof(userInfo))
-    // userInfo.forEach(x =>{
-    //   console.log(x);
-    // })
-    console.log(teams);
+      }
+
+      // agregamos a los usuarios que no tienen equipo a lista de huerfanos
+      for(const[key, value]of Object.entries(userInfo)){
+        if (!teams[key]){
+          if (orphans[key]) {
+            orphans[key].push(value);
+          } else {
+            orphans[key] = [value];
+          }
+        }
+      }
+
+      console.log(orphans);
+
+
+      // console.log(projInfo["IPS - Chronos"]);
+      // console.log(userInfo["Pilar Elizondo"]);
+      // console.log("PROJECTO SFT - Knowledge Transfer and Documentation");
+      // console.log(projInfo["SFT - Knowledge Transfer and Documentation"]);
   });
+
 
   // console.log(userInfo);
   // userInfo.forEach(user => {
