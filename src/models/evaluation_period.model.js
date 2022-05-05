@@ -1,11 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
     const Evaluation_Period = sequelize.define("Evaluation_Period", {
-        id_period: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+        // id_period: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         semester: {
-            type: Sequelize.VARCHAR(255),
+            type: Sequelize.STRING,
             allowNull: false
         },
         evaluation_year: {

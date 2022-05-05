@@ -1,7 +1,10 @@
 const db = require("../models");
-const Tutorial = db.tutorials; // como le hacemos? db.tutorials es el modelo. como le hariamos con 7 modelos?
 const readXlsxFile = require("read-excel-file/node");
 const { type } = require("express/lib/response");
+const Employee = db.Employee; //TODO: lo mismo con todos los modelos
+const Evaluation_Period = db.Evaluation_Period;
+const Employee2 = db.Employee2;
+
 //const upload = async (req, res) => {
 //   try {
 //     if (req.file == undefined) {
@@ -89,7 +92,7 @@ const upload = async(req, res) => {
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
 
-readXlsxFile(path).then((rows) => {
+readXlsxFile(path).then(async(rows) => {
       //se salta los headers
       rows.shift(); 
       rows.shift();
@@ -187,14 +190,21 @@ readXlsxFile(path).then((rows) => {
         }
       }
 
-      console.log(orphans);
+      //console.log(orphans);
+      //console.log({id_employee: 40, is_assigned: 1, employee_name: "roberta", is_HR: 0});
+      const temp = await Employee2.create({is_assigned: 1, email: 'roberta@gail.com', employee_name: 'roberta', is_HR: 0})
+      console.log("ghola");
+      console.log(temp);
+
+      // const temp = await Evaluation_Period.create({semester: 'FebSep', evaluation_year: 2022, hours_to_complete: 40});
+      // console.log(temp);
 
 
-      // console.log(projInfo["IPS - Chronos"]);
-      // console.log(userInfo["Pilar Elizondo"]);
-      // console.log("PROJECTO SFT - Knowledge Transfer and Documentation");
-      // console.log(projInfo["SFT - Knowledge Transfer and Documentation"]);
-  });
+      const [results, metadata] = await sequelize.query("SELECT * FROM Employee");
+      console.log(results)
+      console.log(metadata)
+
+    });
 
 
   // console.log(userInfo);

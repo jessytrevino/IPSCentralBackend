@@ -1,9 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
-    const Employee = sequelize.define("Employee", {
-        id_employee: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+    const Employee2 = sequelize.define("Employee2", {
+        // id_employee: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         is_assigned: {
             type: Sequelize.BOOLEAN,
             allowNull: false
@@ -21,5 +21,5 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         }
     });
-    return Employee;
+    return Employee2;
 };
