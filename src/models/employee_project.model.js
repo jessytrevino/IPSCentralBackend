@@ -25,6 +25,14 @@ module.exports = (sequelize, Sequelize) => {
                 model: 'Project',
                 key: 'id_project'
             }
+        },
+        billHrs: {
+            type: Sequelize.INTEGER,
+            allowNull: false
+        },
+        nonBillHrs: {
+            type: Sequelize.INTEGER,
+            allowNull: false
         }
     }, {
         timestamps: false

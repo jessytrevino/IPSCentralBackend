@@ -143,7 +143,7 @@ readXlsxFile(path).then(async(rows) => {
           }
       });
 
-      
+      console.log(projInfo);
       // iteramos todo user info 
         //key = nombre 
         //value = todo el obj de user
@@ -248,6 +248,7 @@ readXlsxFile(path).then(async(rows) => {
       }
 
       // Employee_Projects
+      // TODO: falta agregar bill and nonbill hrs
       let projRole;
       let didComplete;
       for(const[key, value] of Object.entries(projInfo)){
@@ -266,7 +267,14 @@ readXlsxFile(path).then(async(rows) => {
           const emp =  await Employee.findOne({where: {employee_name: user.username}});
           const proj =  await Project.findOne({where: {project_name: key}});
         
-          const tempEmpProj =  Employee_Project.create({did_complete: didComplete, project_role: projRole, id_employee: emp.id, id_project: proj.id});
+          const tempEmpProj =  Employee_Project.create({
+            did_complete: didComplete, 
+            project_role: projRole, 
+            id_employee: emp.id, 
+            id_project: proj.id, 
+            billHrs: user.billHrs, 
+            nonBillHrs: user.nonBillHrs
+          });
         })
       }
       
@@ -321,10 +329,10 @@ const getTables = (req, res) => {
  
   Object.keys(teams).forEach(function(key){
 
-    //if  map has teams[key].evaluator {
-      // map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
-    //else 
-      //map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
+    if  mas.has teams[key].evaluator {
+      map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
+    else 
+      map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
     
   })
 
