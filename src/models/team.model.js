@@ -1,9 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
-    const Team = sequelize.define("Team", {
-        id_team: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+    const Team = sequelize.define("Teams", {
+        // id_team: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         id_employee: {
             type: Sequelize.INTEGER,
             references: {
@@ -21,11 +21,13 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         approved_HR: {
-            type: Sequelize.BIT,
+            type: Sequelize.BOOLEAN,
         },
         approved_Emp: {
-            type: Sequelize.BIT,
+            type: Sequelize.BOOLEAN,
         }
+    }, {
+        timestamps: false
     });
     return Team;
 };

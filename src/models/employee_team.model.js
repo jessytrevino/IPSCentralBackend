@@ -1,9 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
-    const Employee_Team = sequelize.define("Employee_Team", {
-        id_employee_team: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+    const Employee_Team = sequelize.define("Employee_Teams", {
+        // id_employee_team: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         role_member: {
             type: Sequelize.INTEGER,
             allowNull: false
@@ -28,6 +28,8 @@ module.exports = (sequelize, Sequelize) => {
             },
             allowNull: false
         },
+    }, {
+        timestamps: false
     });
     return Employee_Team;
 };

@@ -1,14 +1,14 @@
 module.exports = (sequelize, Sequelize) => {
-    const Project = sequelize.define("Project", {
-        id_project: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+    const Project = sequelize.define("Projects", {
+        // id_project: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         project_name: {
-            type: Sequelize.VARCHAR(255),
+            type: Sequelize.STRING,
             allowNull: false
         },
-        id_employye_leader: {
+        id_employee_leader: {
             type: Sequelize.INTEGER,
             references: {
                 model: 'Evaluation_Period',
@@ -24,6 +24,8 @@ module.exports = (sequelize, Sequelize) => {
             },
             allowNull: false
         }
+    }, {
+        timestamps: false
     });
     return Project;
 };

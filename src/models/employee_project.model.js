@@ -1,11 +1,11 @@
 module.exports = (sequelize, Sequelize) => {
-    const Employee_Project = sequelize.define("Employee_Project", {
-        id_employye_project: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
-        completed_hours: {
-            type: Sequelize.BIT,
+    const Employee_Project = sequelize.define("Employee_Projects", {
+        // id_employye_project: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
+        did_complete: {
+            type: Sequelize.BOOLEAN,
             allowNull: false
         },
         project_role: {
@@ -17,8 +17,7 @@ module.exports = (sequelize, Sequelize) => {
             references: {
                 model: 'Employee',
                 key: 'id_employee'
-            },
-            allowNull: false
+            }
         },
         id_project: {
             type: Sequelize.INTEGER,
@@ -27,6 +26,8 @@ module.exports = (sequelize, Sequelize) => {
                 key: 'id_project'
             }
         }
+    }, {
+        timestamps: false
     });
     return Employee_Project;
 };

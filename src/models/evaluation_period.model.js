@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-    const Evaluation_Period = sequelize.define("Evaluation_Period", {
+    const Evaluation_Period = sequelize.define("Evaluation_Periods", {
         // id_period: {
         //     type: Sequelize.INTEGER,
         //     allowNull: false
@@ -9,13 +9,15 @@ module.exports = (sequelize, Sequelize) => {
             allowNull: false
         },
         evaluation_year: {
-            type: Sequelize.INTEGER,
+            type: Sequelize.STRING,
             allowNull: false
         },
         hours_to_complete: {
             type: Sequelize.INTEGER,
             allowNull: false
         }
+    }, {
+        timestamps: false
     });
     return Evaluation_Period;
 };

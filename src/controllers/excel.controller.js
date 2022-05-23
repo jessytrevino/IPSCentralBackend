@@ -1,50 +1,16 @@
 const db = require("../models");
 const readXlsxFile = require("read-excel-file/node");
+// const fileSystem = require("browserify-fs");
 const { type } = require("express/lib/response");
-const Employee = db.Employee; //TODO: lo mismo con todos los modelos
-const Evaluation_Period = db.Evaluation_Period;
-const Employee2 = db.Employee2;
+const { team } = require("../models");
+const Employee = db.employee; //TODO: lo mismo con todos los modelos
+const Evaluation_Period = db.evaluation_period;
+const Employee_Project = db.employee_project;
+const Employee_Team = db.employee_team;
+const Project = db.project;
+const Request = db.request;
+const Team = db.team;
 
-//const upload = async (req, res) => {
-//   try {
-//     if (req.file == undefined) {
-//       return res.status(400).send("Please upload an excel file!");
-//     }
-//     let path =
-//       __basedir + "/resources/static/assets/uploads/" + req.file.filename;
-//     readXlsxFile(path).then((rows) => {
-//       // skip header
-//       rows.shift();
-//       let tutorials = [];
-//       rows.forEach((row) => {
-//         let tutorial = {
-//           id: row[0],
-//           title: row[1],
-//           description: row[2],
-//           published: row[3],
-//         };
-//         tutorials.push(tutorial);
-//       });
-//       Tutorial.bulkCreate(tutorials)
-//         .then(() => {
-//           res.status(200).send({
-//             message: "Uploaded the file successfully: " + req.file.originalname,
-//           });
-//         })
-//         .catch((error) => {
-//           res.status(500).send({
-//             message: "Fail to import data into database!",
-//             error: error.message,
-//           });
-//         });
-//     });
-//   } catch (error) {
-//     console.log(error);
-//     res.status(500).send({
-//       message: "Could not upload the file: " + req.file.originalname,
-//     });
-//   }
-// };
 
 class User {
   constructor(clientname, projectname, projectlead, username, billHrs, nonBillHrs, totalHrs) {
@@ -63,6 +29,27 @@ class User {
   }
 }
 
+class EmployeeClass {
+  constructor(is_assigned, email, employee_name, is_HR, id_employee){
+    this.is_assigned = is_assigned;
+    this.email = email;
+    this.employee_name = employee_name;
+    this.is_HR = isHr;
+    this.id_employee = id_employee;
+  }
+}
+
+class EvaluationPeriodClass {
+  consturctor(semester, evaluation_year, hours_to_complete, id_period, has_uploaded){
+    this.semester = semester;
+    this.evaluation_year = evaluation_year;
+    this.hours_to_complete = hours_to_complete;
+    this.id_period = id_period;
+    this.has_uploaded = has_uploaded;
+  }
+}
+
+
 const upload = async(req, res) => {
   class User {
     constructor(clientname, projectname, projectlead, username, billHrs, nonBillHrs, totalHrs) {
@@ -76,15 +63,21 @@ const upload = async(req, res) => {
         if (this.projectlead == this.username){
             this.role = "Leader";
         } else {
-            this.role = "Peer";
+            if (this.username == "Totals"){
+              this.role = "Leader";
+            } else {
+              this.role = "Peer";
+            }
         }
     }
   }
 
   let userInfo = [];
-  let projInfo = [];
+  let projInfo = []; // lista de nombres de proj con usuarios que participan en proj
+  let projNameLeads = []; // lista de nombres de proj con sus líderes
   let teams = [];
   let orphans = [];
+  let hoursToComplete = 40;
 
   //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
   //? Cual es el nombre del archivo?
@@ -130,7 +123,7 @@ readXlsxFile(path).then(async(rows) => {
                   userInfo[user.username] = [user];
               }
           }
-
+          
           // agregar proyectos a la lista de ProjInfo
           if (user.username != "Totals"){
               if (projInfo[user.projectname]) {
@@ -139,10 +132,18 @@ readXlsxFile(path).then(async(rows) => {
                   projInfo[user.projectname] = [user];
               }
           }
-
           
+          // agregar proyectos y sus líderes a la lista de ProjNameLeads
+          if (!projNameLeads[user.projectname]){
+            if(user.username != null) {
+              if (user.role == "Leader"){
+                projNameLeads[user.projectname] = user.projectlead;
+              }
+            }
+          }
       });
 
+      
       // iteramos todo user info 
         //key = nombre 
         //value = todo el obj de user
@@ -150,11 +151,11 @@ readXlsxFile(path).then(async(rows) => {
         // itera por cada objeto (entry) de cada persona
         value.forEach((entry) => {
             // checa si el usuario(key) en cada proj(entry) tuvo mas de 40hrs
-            if (entry.totalHrs >= 40) {
+            if (entry.totalHrs >= hoursToComplete) {
                 // dentro de ese proj(entry) itera por cada usuario
                 projInfo[entry.projectname].forEach((userInProj) => { 
                     // checamos si el usuario(key) es diferente al userInProj y si el userInProj SÍ cumplió las 40 hrs
-                    if (userInProj.username != key && userInProj.totalHrs >= 40) {
+                    if (userInProj.username != key && userInProj.totalHrs >= hoursToComplete) {
                         // si el equipo de usuario(key) todavía no exsite lo creamos y agregamos userInProj
                         if (!teams[key]){ 
                           teams[key] = [userInProj];
@@ -187,53 +188,198 @@ readXlsxFile(path).then(async(rows) => {
           } else {
             orphans[key] = [value];
           }
+        } else {
+          userInfo[key].role = 1;
         }
       }
 
-      //console.log(orphans);
-      //console.log({id_employee: 40, is_assigned: 1, employee_name: "roberta", is_HR: 0});
-      const temp = await Employee2.create({is_assigned: 1, email: 'roberta@gail.com', employee_name: 'roberta', is_HR: 0})
-      console.log("ghola");
-      console.log(temp);
+      // variables auxiliares
+      let periodSemester = 'SepFeb';
+      let evaluationYear = '2021-2022';
 
-      // const temp = await Evaluation_Period.create({semester: 'FebSep', evaluation_year: 2022, hours_to_complete: 40});
-      // console.log(temp);
+      /! Agregar a tablas !/
+      
+      // Evaluation_Periods
+      //TODO: cambiar a que sea loop no nadamas una ves CREO idk
+      const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete});
+      const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
+      // let evalPeriodArr = [];
+      // evalPeriodArr[tempPer.id] = [period];
+      /*var json = JSON.stringify(period);
+      fileSystem.writeFile("./jsonfile.json", json, err=> {
+        if(err){
+          console.log("No funciono stringify");
+        } else {
+          console.log("Json data write success");
+        }
+      });*/
+      
+      
+      // Employees
+      let is_orphan;
+      for(const[key, value] of Object.entries(userInfo)){
+        if (!orphans[key]){
+          is_orphan = true;
+        } else {
+          is_orphan = false;
+        }
+        
+        const tempEmp = await Employee.create({is_assigned: is_orphan, email: '', employee_name: key, is_HR: 0});
+        
+        // Teams
+        const tempTeam = await Team.create({id_employee: tempEmp.id, id_period: tempPer.id, approved_HR: 0, approved_Emp: 0});
+      }
 
+      // se necesita crear uno NA por que hay veces donde no hay líder
+      const tempEmp = await Employee.create({is_assigned: 0, email: '', employee_name: "NA", is_HR: 0});
 
-      const [results, metadata] = await sequelize.query("SELECT * FROM Employee");
-      console.log(results)
-      console.log(metadata)
+      // Projects
+      for(const[key, value] of Object.entries(projNameLeads)){
+        if(key != null) {
+          if (await Employee.findOne({where: {employee_name: value}}) == null){
+            const user = new User("NA", key, value, value, 0, 0, 0);
+            const tempEmp = await Employee.create({is_assigned: 0, email: '', employee_name: value, is_HR: 0});
+          }
 
+          const emp = await Employee.findOne({where: {employee_name: value}});
+          const tempProj = await Project.create({project_name: key, id_employee_leader: emp.id, id_period: tempPer.id});
+        }
+        
+      }
+
+      // Employee_Projects
+      let projRole;
+      let didComplete;
+      for(const[key, value] of Object.entries(projInfo)){
+        value.forEach(async(user) => {
+          if (user.role == "Leader"){
+            projRole = 1;
+          } else {
+            projRole = 0;
+          }
+          if (user.totalHrs >= hoursToComplete) {
+            didComplete = 1;
+          } else {
+            didComplete = 0;
+          }
+
+          const emp =  await Employee.findOne({where: {employee_name: user.username}});
+          const proj =  await Project.findOne({where: {project_name: key}});
+        
+          const tempEmpProj =  Employee_Project.create({did_complete: didComplete, project_role: projRole, id_employee: emp.id, id_project: proj.id});
+        })
+      }
+      
+      // Employee_Teams
+      let status = 0;
+      let teamRole;
+      for(const[key, value] of Object.entries(teams)){
+        const empKey =  await Employee.findOne({where: {employee_name: key}});
+        
+        value.forEach(async(user) => {
+
+          const empUser =  await Employee.findOne({where: {employee_name: user.username}});
+          const teamKey = await Team.findOne({where: {id_employee: empKey.id}});
+          
+          if (empKey.employee_name == user.projectlead){
+            teamRole = 2; // team
+          } else if (user.role == 'Leader'){
+            teamRole = 0; // leader
+          } else if (user.role == 'Peer') {
+            teamRole = 1; // peer
+          }
+
+          const tempEmpTeam = await Employee_Team.create({role_member: teamRole, status_member: teamRole, id_employee: empUser.id, id_team: teamKey.id}); 
+          
+          if(key == "Hadwin Zaragoza"){
+            console.log(empUser.employee_name, user.role, tempEmpTeam.role_member);
+          }
+
+          // if(key == "Hadwin Zaragoza"){
+          //   console.log(user.username, user.role, teamRole, tempEmpTeam.role_member);
+          // }
+        })
+      }
     });
 
-
-  // console.log(userInfo);
-  // userInfo.forEach(user => {
-  //     console.log(user);
-  //   })
-
-
-
+    // de jessy
     console.log("inside the file saving part");
     res.status(200).send({message: "upload successful"});
 
-
 }
 
+// subir archivo
+// otra funcion y query que agarre los datos
+
+
+/*
 const getTables = (req, res) => {
-  Tutorial.findAll()
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving tutorials.",
-      });
-    });
-};
+  // query 
+  // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
+  const teams = await db.sequelize.query() // ! query goes here <-
+  map = new Map(); 
+ 
+  Object.keys(teams).forEach(function(key){
+
+    //if  map has teams[key].evaluator {
+      // map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
+    //else 
+      //map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
+    
+  })
+
+};*/
 
 module.exports = {
   upload,
-  getTables,
+  //getTables,
 };
+
+
+/* Find all users
+      const employees = await Employee.findAll();
+      console.log(employees.every(employee => employee instanceof Employee)); // true
+      console.log("All users:", JSON.stringify(employees, null, 2));
+*/
+
+
+//const upload = async (req, res) => {
+//   try {
+//     if (req.file == undefined) {
+//       return res.status(400).send("Please upload an excel file!");
+//     }
+//     let path =
+//       __basedir + "/resources/static/assets/uploads/" + req.file.filename;
+//     readXlsxFile(path).then((rows) => {
+//       // skip header
+//       rows.shift();
+//       let tutorials = [];
+//       rows.forEach((row) => {
+//         let tutorial = {
+//           id: row[0],
+//           title: row[1],
+//           description: row[2],
+//           published: row[3],
+//         };
+//         tutorials.push(tutorial);
+//       });
+//       Tutorial.bulkCreate(tutorials)
+//         .then(() => {
+//           res.status(200).send({
+//             message: "Uploaded the file successfully: " + req.file.originalname,
+//           });
+//         })
+//         .catch((error) => {
+//           res.status(500).send({
+//             message: "Fail to import data into database!",
+//             error: error.message,
+//           });
+//         });
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).send({
+//       message: "Could not upload the file: " + req.file.originalname,
+//     });
+//   }
+// };

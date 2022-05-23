@@ -1,13 +1,13 @@
 const teamModel = require("./team.model");
 
 module.exports = (sequelize, Sequelize) => {
-    const Request = sequelize.define("Request", {
-        id_request: {
-            type: Sequelize.INTEGER,
-            allowNull: false
-        },
+    const Request = sequelize.define("Requests", {
+        // id_request: {
+        //     type: Sequelize.INTEGER,
+        //     allowNull: false
+        // },
         motive: {
-            type: Sequelize.VARCHAR(255),
+            type: Sequelize.STRING,
             allowNull: false
         },
         id_emp_mod: {
@@ -21,6 +21,8 @@ module.exports = (sequelize, Sequelize) => {
         status: {
             type: Sequelize.INTEGER,
         }
+    }, {
+        timestamps: false
     });
     return Request;
 };

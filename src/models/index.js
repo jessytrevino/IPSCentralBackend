@@ -26,9 +26,13 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-db.Employee = require("./employee.model.js")(sequelize, Sequelize);
-db.Evaluation_Period = require("./evaluation_period.model.js")(sequelize, Sequelize);
-db.Employee2 = require("./employee2.model.js")(sequelize, Sequelize);
+db.employee = require("./employee.model.js")(sequelize, Sequelize);
+db.evaluation_period = require("./evaluation_period.model.js")(sequelize, Sequelize);
+db.employee_project = require("./employee_project.model")(sequelize, Sequelize);
+db.employee_team = require("./employee_team.model")(sequelize, Sequelize);
+db.project = require("./project.model")(sequelize, Sequelize);
+db.request = require("./request.model")(sequelize, Sequelize);
+db.team = require("./team.model")(sequelize, Sequelize);
 
 //db.tutorials = require("./employee.model.js")(sequelize, Sequelize);
 module.exports = db;
