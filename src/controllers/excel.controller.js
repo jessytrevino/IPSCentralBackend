@@ -3,6 +3,7 @@ const readXlsxFile = require("read-excel-file/node");
 // const fileSystem = require("browserify-fs");
 const { type } = require("express/lib/response");
 const { team } = require("../models");
+const { QueryTypes } = require("sequelize");
 const Employee = db.employee; //TODO: lo mismo con todos los modelos
 const Evaluation_Period = db.evaluation_period;
 const Employee_Project = db.employee_project;
@@ -143,7 +144,7 @@ readXlsxFile(path).then(async(rows) => {
           }
       });
 
-      console.log(projInfo);
+      
       // iteramos todo user info 
         //key = nombre 
         //value = todo el obj de user
@@ -197,22 +198,14 @@ readXlsxFile(path).then(async(rows) => {
       let periodSemester = 'SepFeb';
       let evaluationYear = '2021-2022';
 
+      console.log(teams);
+
       /! Agregar a tablas !/
       
       // Evaluation_Periods
       //TODO: cambiar a que sea loop no nadamas una ves CREO idk
       const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete});
       const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
-      // let evalPeriodArr = [];
-      // evalPeriodArr[tempPer.id] = [period];
-      /*var json = JSON.stringify(period);
-      fileSystem.writeFile("./jsonfile.json", json, err=> {
-        if(err){
-          console.log("No funciono stringify");
-        } else {
-          console.log("Json data write success");
-        }
-      });*/
       
       
       // Employees
@@ -248,9 +241,10 @@ readXlsxFile(path).then(async(rows) => {
       }
 
       // Employee_Projects
-      // TODO: falta agregar bill and nonbill hrs
+      
       let projRole;
       let didComplete;
+
       for(const[key, value] of Object.entries(projInfo)){
         value.forEach(async(user) => {
           if (user.role == "Leader"){
@@ -316,31 +310,41 @@ readXlsxFile(path).then(async(rows) => {
 
 }
 
+
+
+
 // subir archivo
 // otra funcion y query que agarre los datos
-
-
 /*
-const getTables = (req, res) => {
+const postMotive = async(req, res) => {
+  // motive, idempmod, status, type, idempreq
+
+  // madar
+    // 
+}*/
+
+
+const getTables = async (req, res) => {
   // query 
   // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
-  const teams = await db.sequelize.query() // ! query goes here <-
-  map = new Map(); 
+  const teams = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
+  res.send(teams);
+  // map = new Map(); 
  
-  Object.keys(teams).forEach(function(key){
+  // Object.keys(teams).forEach(function(key){
 
-    if  mas.has teams[key].evaluator {
-      map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
-    else 
-      map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
+  //   if  mas.has teams[key].evaluator {
+  //     map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
+  //   else 
+  //     map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
     
-  })
+  // })
 
-};*/
+};
 
 module.exports = {
   upload,
-  //getTables,
+  getTables,
 };
 
 

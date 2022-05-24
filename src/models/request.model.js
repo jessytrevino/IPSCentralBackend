@@ -18,6 +18,17 @@ module.exports = (sequelize, Sequelize) => {
             },
             allowNull: false
         },
+        id_emp_req: {
+            type: Sequelize.INTEGER,
+            references: {
+                model: 'Employee',
+                key: 'id_employee'
+            },
+            allowNull: false
+        },
+        type: {
+            type: Sequelize.INTEGER
+        },
         status: {
             type: Sequelize.INTEGER,
         }
