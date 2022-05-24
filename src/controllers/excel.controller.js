@@ -325,8 +325,9 @@ const postMotive = async(req, res) => {
 
 // la usamos en Consultar Equipos
 const getEmployees = async (req, res) => {
-  // query 
-  // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
+  // returns EmpName approveEmp y approveHR
+    // select Employees.employee_name, Teams.approved_Emp, Teams.approved_HR from Employees join Teams on Employees.id = Teams.id_employee where Employees.is_assigned = (1)
+
   const teams = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
   res.send(teams);
   // map = new Map(); 
@@ -342,9 +343,48 @@ const getEmployees = async (req, res) => {
 
 };
 
+const getTeams = async (req, res) => {
+  const teams = await db.sequelize.query(`select * from Teams`, {type: QueryTypes.SELECT})
+  res.send(teams);
+};
+
+const getEmployeeProjects = async (req, res) => {
+  const empProj = await db.sequelize.query(`select * from Employee_Projects`, {type: QueryTypes.SELECT})
+  res.send(empProj);
+};
+
+const getEmployeeTeam = async (req, res) => {
+  const empTeams = await db.sequelize.query(`select * from Employee_Teams`, {type: QueryTypes.SELECT})
+  res.send(empTeams);
+};
+
+const getEvaluationPeriods = async (req, res) => {
+  const evalPeridos = await db.sequelize.query(`select * from Evaluation_Periods`, {type: QueryTypes.SELECT})
+  res.send(evalPeridos);
+};
+
+const getProjects = async (req, res) => {
+  const proj = await db.sequelize.query(`select * from Projects`, {type: QueryTypes.SELECT})
+  res.send(proj);
+};
+
+const getRequest = async (req, res) => {
+  const req = await db.sequelize.query(`select * from Requests`, {type: QueryTypes.SELECT})
+  res.send(req);
+};
+
+
+
+
 module.exports = {
   upload,
-  getTables,
+  getEmployees,
+  getTeams,
+  getEmployeeProjects,
+  getEmployeeTeam,
+  getEvaluationPeriods,
+  getProjects,
+  getRequest
 };
 
 
