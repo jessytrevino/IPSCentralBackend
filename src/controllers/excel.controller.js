@@ -82,7 +82,8 @@ const upload = async(req, res) => {
 
   //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
   //? Cual es el nombre del archivo?
-  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
+  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
+  let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
 
@@ -327,8 +328,8 @@ const postMotive = async(req, res) => {
 const getEmployees = async (req, res) => {
   // query 
   // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
-  const teams = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
-  res.send(teams);
+  const employees = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
+  res.send(employees);
   // map = new Map(); 
  
   // Object.keys(teams).forEach(function(key){
@@ -342,9 +343,34 @@ const getEmployees = async (req, res) => {
 
 };
 
+const getTeams = async (req, res) => {
+  const teams = await db.sequelize.query(`select * from Teams`, {type: QueryTypes.SELECT})
+  res.send(teams);
+}
+
+const getEmpTeams = async (req, res) => {
+  const empTeams = await db.sequelize.query(`select * from Employee_Teams`, {type: QueryTypes.SELECT})
+  res.send(empTeams);
+}
+
+const getProjects = async (req, res) => {
+  const empTeams = await db.sequelize.query(`select * from Projects`, {type: QueryTypes.SELECT})
+  res.send(empTeams);
+}
+
+const getEmpProjects = async (req, res) => {
+  const empProjects = await db.sequelize.query(`select * from Employee_Projects`, {type: QueryTypes.SELECT})
+  res.send(empProjects);
+}
+
+
 module.exports = {
   upload,
-  getTables,
+  getEmployees,
+  getTeams,
+  getEmpTeams,
+  getProjects,
+  getEmpProjects
 };
 
 

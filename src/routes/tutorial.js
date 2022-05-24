@@ -6,7 +6,12 @@ const upload = require("../middleware/upload");
 
 let routes = (app) => {
     router.post("/upload", upload.single("excel"), excelController.upload);
-    router.get("/getTables", excelController.getTables);
+    router.get("/getEmployees", excelController.getEmployees);
+    router.get("/getTeams", excelController.getTeams);
+    router.get("/getEmpTeams", excelController.getEmpTeams);
+    router.get("/getProjects", excelController.getEmpTeams);
+    router.get("/getEmpProjects", excelController.getEmpTeams);
+
     app.use("/api", router);
     
 };
