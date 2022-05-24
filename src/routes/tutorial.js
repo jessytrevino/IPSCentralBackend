@@ -8,9 +8,13 @@ let routes = (app) => {
     router.post("/upload", upload.single("excel"), excelController.upload);
     router.get("/getEmployees", excelController.getEmployees);
     router.get("/getTeams", excelController.getTeams);
-    router.get("/getEmpTeams", excelController.getEmpTeams);
-    router.get("/getProjects", excelController.getEmpTeams);
-    router.get("/getEmpProjects", excelController.getEmpTeams);
+    router.get("/getEmployeeProjects", excelController.getEmployeeProjects);
+    router.get("/getEmployeeTeam", excelController.getEmployeeTeam);
+    router.get("/getEvaluationPeriods", excelController.getEvaluationPeriods);
+    router.get("/getProjects", excelController.getProjects);
+    router.get("/getRequest", excelController.getRequest);
+
+
 
     app.use("/api", router);
     
