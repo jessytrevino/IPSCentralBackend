@@ -323,8 +323,8 @@ const postMotive = async(req, res) => {
     // 
 }*/
 
-
-const getTables = async (req, res) => {
+// la usamos en Consultar Equipos
+const getEmployees = async (req, res) => {
   // query 
   // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
   const teams = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
