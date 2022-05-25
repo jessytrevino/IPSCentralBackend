@@ -15,7 +15,12 @@ module.exports = (sequelize, Sequelize) => {
         hours_to_complete: {
             type: Sequelize.INTEGER,
             allowNull: false
+        },
+        has_uploaded: {
+            type: Sequelize.BOOLEAN,
+            allowNull: false
         }
+
     }, {
         timestamps: false
     });

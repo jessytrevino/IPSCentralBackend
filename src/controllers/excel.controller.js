@@ -205,7 +205,7 @@ readXlsxFile(path).then(async(rows) => {
       
       // Evaluation_Periods
       //TODO: cambiar a que sea loop no nadamas una ves CREO idk
-      const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete});
+      const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: false});
       const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
       
       
@@ -374,9 +374,13 @@ const getProjects = async (req, res) => {
 };
 
 const getRequest = async (req, res) => {
-  const req = await db.sequelize.query(`select * from Requests`, {type: QueryTypes.SELECT})
-  res.send(req);
+  const request = await db.sequelize.query(`select * from Requests`, {type: QueryTypes.SELECT})
+  res.send(request);
 };
+
+const postHasUploaded = async (req, res) => {
+  
+}
 
 
 
