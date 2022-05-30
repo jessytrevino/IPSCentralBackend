@@ -30,25 +30,6 @@ class User {
   }
 }
 
-class EmployeeClass {
-  constructor(is_assigned, email, employee_name, is_HR, id_employee){
-    this.is_assigned = is_assigned;
-    this.email = email;
-    this.employee_name = employee_name;
-    this.is_HR = isHr;
-    this.id_employee = id_employee;
-  }
-}
-
-class EvaluationPeriodClass {
-  consturctor(semester, evaluation_year, hours_to_complete, id_period, has_uploaded){
-    this.semester = semester;
-    this.evaluation_year = evaluation_year;
-    this.hours_to_complete = hours_to_complete;
-    this.id_period = id_period;
-    this.has_uploaded = has_uploaded;
-  }
-}
 
 
 const upload = async(req, res) => {
@@ -77,13 +58,15 @@ const upload = async(req, res) => {
   let projInfo = []; // lista de nombres de proj con usuarios que participan en proj
   let projNameLeads = []; // lista de nombres de proj con sus líderes
   let teams = [];
+  let orphanTeams = [];
+  let orphanJson = [];
   let orphans = [];
   let hoursToComplete = 40;
 
   //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
   //? Cual es el nombre del archivo?
-  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
-  let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
+  //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
 
@@ -173,7 +156,6 @@ readXlsxFile(path).then(async(rows) => {
                           // si todavía no esta en el equipo lo agregamos
                           else {
                             teams[key].push(userInProj);
-
                           }
                         }
                     }
@@ -195,18 +177,72 @@ readXlsxFile(path).then(async(rows) => {
         }
       }
 
+      // hacemos equipos provicionales de huerfanos
+      for(const[key, value]of Object.entries(userInfo)){
+        if (orphans[key]){
+        // itera por cada objeto (entry) de cada persona
+          value.forEach((entry) => {
+              console.log(key);
+              // dentro de ese proj(entry) itera por cada usuario
+                projInfo[entry.projectname].forEach((userInProj) => { 
+                  if (projInfo[entry.projectname].length > 1){
+                    // checamos si el usuario(key) es diferente al userInProj
+                    if (userInProj.username != key) {
+                        // si el equipo de usuario(key) todavía no exsite lo creamos y agregamos userInProj
+                        if (!orphanTeams[key]){ 
+                          orphanTeams[key] = [userInProj];
+                        } 
+                        else {
+                          // checamos si userInProj ya esta en el equipo con el mismo rol
+                          if (orphanTeams[key].includes(userInProj.username)){
+                            // si rol es igual entonces no se agrega
+                            if (orphanTeams[key].role != userInProj.role){
+                              orphanTeams[key].push(userInProj);
+                            } 
+                          }
+                          // si todavía no esta en el equipo lo agregamos
+                          else {
+                            orphanTeams[key].push(userInProj);
+                          }
+                        }
+                    }
+                  }
+                  // si el huerfano esta solo en su equipo agregar al líder
+                  else {
+                    if (!orphanTeams[key]){ 
+                      orphanTeams[key] = [userInProj.projectlead];
+                    } 
+                    else {
+                      // checamos si userInProj ya esta en el equipo con el mismo rol
+                      if (orphanTeams[key].includes(userInProj.username)){
+                        // si rol es igual entonces no se agrega
+                        if (orphanTeams[key].role != userInProj.role){
+                          orphanTeams[key].push(userInProj);
+                        } 
+                      }
+                      // si todavía no esta en el equipo lo agregamos
+                      else {
+                        orphanTeams[key].push(userInProj);
+                      }
+                    }
+                  }
+                }) 
+          })
+        }
+      }
+      // console.log(orphans);
+      console.log(orphanTeams);
+
       // variables auxiliares
       let periodSemester = 'SepFeb';
       let evaluationYear = '2021-2022';
-
-      console.log(teams);
 
       /! Agregar a tablas !/
       
       // Evaluation_Periods
       //TODO: cambiar a que sea loop no nadamas una ves CREO idk
       const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: false});
-      const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
+      // const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
       
       
       // Employees
@@ -238,11 +274,9 @@ readXlsxFile(path).then(async(rows) => {
           const emp = await Employee.findOne({where: {employee_name: value}});
           const tempProj = await Project.create({project_name: key, id_employee_leader: emp.id, id_period: tempPer.id});
         }
-        
       }
 
       // Employee_Projects
-      
       let projRole;
       let didComplete;
 
@@ -293,16 +327,25 @@ readXlsxFile(path).then(async(rows) => {
           }
 
           const tempEmpTeam = await Employee_Team.create({role_member: teamRole, status_member: teamRole, id_employee: empUser.id, id_team: teamKey.id}); 
-          
-          if(key == "Hadwin Zaragoza"){
-            console.log(empUser.employee_name, user.role, tempEmpTeam.role_member);
-          }
-
-          // if(key == "Hadwin Zaragoza"){
-          //   console.log(user.username, user.role, teamRole, tempEmpTeam.role_member);
-          // }
         })
       }
+
+      // Equipos Huerfanos (nombreEq, idEq, nombreEmp, idEmp, rol)
+      for(const[key, value] of Object.entries(orphanTeams)) {
+        const userTeamName = await Employee.findOne({ where: {employee_name: key}});
+        if (orphanTeams[key].length > 1){
+          value.forEach(async(user) => {
+            const teamEmp = await Employee.findOne({where: {employee_name: user.username}});
+          })
+        } else {
+          const teamEmp = await Employee.findOne({where: {employee_name: value}});
+          let arr = {userTeamName: 'test'};
+        }
+        
+      }
+
+
+
     });
 
     // de jessy
@@ -326,26 +369,9 @@ const postMotive = async(req, res) => {
 
 // la usamos en Consultar Equipos
 const getEmployees = async (req, res) => {
-  // query 
-  // hacer un arreglo de {key, val } key = user.nam , {team: [teams], status}
   const employees = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
+  console.log(employees);
   res.send(employees);
-  // returns EmpName approveEmp y approveHR
-    // select Employees.employee_name, Teams.approved_Emp, Teams.approved_HR from Employees join Teams on Employees.id = Teams.id_employee where Employees.is_assigned = (1)
-
-  // const teams = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
-  // res.send(teams);
-  // map = new Map(); 
- 
-  // Object.keys(teams).forEach(function(key){
-
-  //   if  mas.has teams[key].evaluator {
-  //     map.get(teams[key].evaluator).team.push(teams[key].evaluetee) //get regresa objeto
-  //   else 
-  //     map.set(teams[key].evaluator , {teams: [teams[key].evaluetee], status: teams[key].status} )
-    
-  // })
-
 };
 
 const getTeams = async (req, res) => {
