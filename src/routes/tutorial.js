@@ -9,10 +9,11 @@ let routes = (app) => {
     router.get("/getEmployees", excelController.getEmployees);
     router.get("/getTeams", excelController.getTeams);
     router.get("/getEmployeeProjects", excelController.getEmployeeProjects);
-    router.get("/getEmployeeTeam", excelController.getEmployeeTeam);
+    router.get("/getEmployeeTeams", excelController.getEmployeeTeams);
     router.get("/getEvaluationPeriods", excelController.getEvaluationPeriods);
     router.get("/getProjects", excelController.getProjects);
-    router.get("/getRequest", excelController.getRequest);
+    router.get("/getRequests", excelController.getRequests);
+    router.get("/getHasUploaded", excelController.getHasUploaded);
 
 
 

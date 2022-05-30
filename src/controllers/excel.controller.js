@@ -241,8 +241,8 @@ readXlsxFile(path).then(async(rows) => {
       
       // Evaluation_Periods
       //TODO: cambiar a que sea loop no nadamas una ves CREO idk
-      const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: false});
-      // const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
+      const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: true});
+      const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
       
       
       // Employees
@@ -384,7 +384,7 @@ const getEmployeeProjects = async (req, res) => {
   res.send(empProj);
 };
 
-const getEmployeeTeam = async (req, res) => {
+const getEmployeeTeams = async (req, res) => {
   const empTeams = await db.sequelize.query(`select * from Employee_Teams`, {type: QueryTypes.SELECT})
   res.send(empTeams);
 };
@@ -399,13 +399,15 @@ const getProjects = async (req, res) => {
   res.send(proj);
 };
 
-const getRequest = async (req, res) => {
+const getRequests = async (req, res) => {
   const request = await db.sequelize.query(`select * from Requests`, {type: QueryTypes.SELECT})
   res.send(request);
 };
 
-const postHasUploaded = async (req, res) => {
-  
+const getHasUploaded = async (req, res) => {
+  const hasU = await db.sequelize.query(`select has_uploaded from Evaluation_Periods where evaluation_year='2021-2022' and semester='SepFeb'`, {type: QueryTypes.SELECT});
+  res.send(hasU);
+
 }
 
 
@@ -416,10 +418,11 @@ module.exports = {
   getEmployees,
   getTeams,
   getEmployeeProjects,
-  getEmployeeTeam,
+  getEmployeeTeams,
   getEvaluationPeriods,
   getProjects,
-  getRequest
+  getRequests,
+  getHasUploaded
 };
 
 
