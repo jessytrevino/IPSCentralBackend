@@ -454,7 +454,7 @@ module.exports = {
   getProjects,
   getRequests,
   getHasUploaded,
-  getOrphanEmployees
+  getOrphanEmployees,
   requestAdd: requestAdd
 };
 
