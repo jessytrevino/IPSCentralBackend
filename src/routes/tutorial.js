@@ -13,8 +13,10 @@ let routes = (app) => {
     router.get("/getEvaluationPeriods", excelController.getEvaluationPeriods);
     router.get("/getProjects", excelController.getProjects);
     router.get("/getRequests", excelController.getRequests);
+    router.get("/getHasUploaded", excelController.getHasUploaded);
 
-    router.post("/requestAdd", excelController.AddRequest);
+    router.post("/requestAdd", excelController.requestAdd);
+
 
     // router.route('/requestAdd').post((request, response) => {
     //     let add_request = {...request.body}
