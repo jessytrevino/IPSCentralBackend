@@ -20,6 +20,7 @@
     "browserify-fs": "^1.0.0",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "mssql": "^8.1.2",
     "multer": "^1.4.4",
     "mysql2": "^2.3.3",
     "read-excel-file": "^5.2.28",

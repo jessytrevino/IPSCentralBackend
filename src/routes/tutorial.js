@@ -16,9 +16,24 @@ let routes = (app) => {
     router.get("/getHasUploaded", excelController.getHasUploaded);
     router.get("/getOrphanEmployees", excelController.getOrphanEmployees);
 
+    router.post("/requestAdd", excelController.requestAdd);
 
+
+    // router.route('/requestAdd').post((request, response) => {
+    //     let add_request = {...request.body}
+    //     excelController.AddRequest(add_request).then(result => {
+    //     response.json(result[0]);
+      
+    //     })
+      
+    //   })
 
     app.use("/api", router);
+
+   
     
 };
+
+
+
 module.exports = routes;
