@@ -12,6 +12,11 @@ const Project = db.project;
 const Request = db.request;
 const Team = db.team;
 
+// const sql = require('mssql');
+// var config = require('../config/db.config');
+// const pool = new sql.ConnectionPool(config);
+// const poolConnect = pool.connect();
+
 
 class User {
   constructor(clientname, projectname, projectlead, username, billHrs, nonBillHrs, totalHrs) {
@@ -65,10 +70,11 @@ const upload = async(req, res) => {
 
   //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
   //? Cual es el nombre del archivo?
-  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
+  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
+  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
 readXlsxFile(path).then(async(rows) => {
       //se salta los headers
@@ -410,6 +416,14 @@ const getHasUploaded = async (req, res) => {
 
 }
 
+const requestAdd = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status }})
+  res.status(200).send({message: "post request successful"});
+	} 
+
+
 
 
 
@@ -422,7 +436,8 @@ module.exports = {
   getEvaluationPeriods,
   getProjects,
   getRequests,
-  getHasUploaded
+  getHasUploaded,
+  requestAdd: requestAdd
 };
 
 

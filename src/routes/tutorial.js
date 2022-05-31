@@ -13,11 +13,24 @@ let routes = (app) => {
     router.get("/getEvaluationPeriods", excelController.getEvaluationPeriods);
     router.get("/getProjects", excelController.getProjects);
     router.get("/getRequests", excelController.getRequests);
-    router.get("/getHasUploaded", excelController.getHasUploaded);
 
+    router.post("/requestAdd", excelController.AddRequest);
 
+    // router.route('/requestAdd').post((request, response) => {
+    //     let add_request = {...request.body}
+    //     excelController.AddRequest(add_request).then(result => {
+    //     response.json(result[0]);
+      
+    //     })
+      
+    //   })
 
     app.use("/api", router);
+
+   
     
 };
+
+
+
 module.exports = routes;
