@@ -33,6 +33,7 @@ db.employee_team = require("./employee_team.model")(sequelize, Sequelize);
 db.project = require("./project.model")(sequelize, Sequelize);
 db.request = require("./request.model")(sequelize, Sequelize);
 db.team = require("./team.model")(sequelize, Sequelize);
+db.orphan_team = require("./orphan_team.model")(sequelize, Sequelize);
 
 //db.tutorials = require("./employee.model.js")(sequelize, Sequelize);
 module.exports = db;
