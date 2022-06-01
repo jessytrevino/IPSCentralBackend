@@ -455,6 +455,13 @@ const removeHR = async(req, res) => {
   res.status(200).send({message: "remove by HR successful"});
 };
 
+const approveHR = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC APPROVEHR :id`, 
+  {replacements: { id: req.body.id }})
+  res.status(200).send({message: "approve by HR successful"});
+};
+
 
 
 
@@ -471,7 +478,8 @@ module.exports = {
   getHasUploaded,
   getOrphanEmployees,
   requestAdd: requestAdd,
-  removeHR: removeHR
+  removeHR: removeHR,
+  approveHR: approveHR
 };
 
 
