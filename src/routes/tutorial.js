@@ -18,6 +18,8 @@ let routes = (app) => {
     router.get("/getOrphanTeams", excelController.getOrphanTeams);
 
     router.post("/requestAdd", excelController.requestAdd);
+    router.post("/removeHR", excelController.removeHR);
+    router.post("/approveHR", excelController.approveHR);
 
 
     // router.route('/requestAdd').post((request, response) => {
