@@ -70,11 +70,11 @@ const upload = async(req, res) => {
 
   //let path = '/Users/robertasaldana/Downloads/equipos.xlsx'; //preguntar dsp path del folder de resoures + nombre del arch
   //? Cual es el nombre del archivo?
-  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
+  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx' 
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
-  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
 readXlsxFile(path).then(async(rows) => {
       //se salta los headers
@@ -249,12 +249,20 @@ readXlsxFile(path).then(async(rows) => {
       
       // Employees
       let assigned;
+      let email = ['A00827097@tec.mx', 'A00827008@tec.mx', 'A00829404@tec.mx', 'A00827044@tec.mx', 'A00827939@tec.mx'];
+      console.log(email[0]);
+      console.log(email[1]);
+      console.log(email[2]);
+      console.log(email[3]);
+      console.log(email[4]);
+      let emailCount = 0;
       for(const[key, value] of Object.entries(userInfo)){
         if (!orphans[key]){ // if key is not in orphans
           assigned = true;
         } else {
           assigned = false;
         }
+        
         
         const tempEmp = await Employee.create({is_assigned: assigned, email: '', employee_name: key, is_HR: 0});
         
