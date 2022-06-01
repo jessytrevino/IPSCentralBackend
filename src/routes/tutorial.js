@@ -17,6 +17,7 @@ let routes = (app) => {
     router.get("/getOrphanEmployees", excelController.getOrphanEmployees);
 
     router.post("/requestAdd", excelController.requestAdd);
+    router.post("/removeHR", excelController.removeHR);
 
 
     // router.route('/requestAdd').post((request, response) => {
