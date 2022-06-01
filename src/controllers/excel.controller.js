@@ -74,7 +74,7 @@ const upload = async(req, res) => {
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
   //let path = '/Users/robertasaldana/Downloads/Reporte horas-equipos 360 (1).xlsx';
   
-  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
 readXlsxFile(path).then(async(rows) => {
       //se salta los headers
