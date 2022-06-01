@@ -31,6 +31,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         status: {
             type: Sequelize.INTEGER,
+        },
+        title: {
+            type: Sequelize.STRING
         }
     }, {
         timestamps: false

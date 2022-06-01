@@ -14,6 +14,7 @@ let routes = (app) => {
     router.get("/getProjects", excelController.getProjects);
     router.get("/getRequests", excelController.getRequests);
     router.get("/getHasUploaded", excelController.getHasUploaded);
+    router.get("/getOrphanEmployees", excelController.getOrphanEmployees);
 
     router.post("/requestAdd", excelController.requestAdd);
 

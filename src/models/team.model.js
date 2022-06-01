@@ -25,6 +25,9 @@ module.exports = (sequelize, Sequelize) => {
         },
         approved_Emp: {
             type: Sequelize.BOOLEAN,
+        },
+        is_team_orphan: {
+            type: Sequelize.BOOLEAN,
         }
     }, {
         timestamps: false

@@ -134,7 +134,7 @@ readXlsxFile(path).then(async(rows) => {
           }
       });
 
-      
+      //! Equipos
       // iteramos todo user info 
         //key = nombre 
         //value = todo el obj de user
@@ -171,7 +171,7 @@ readXlsxFile(path).then(async(rows) => {
       }
 
       // agregamos a los usuarios que no tienen equipo a lista de huerfanos
-      for(const[key, value]of Object.entries(userInfo)){
+      for(const[key, value] of Object.entries(userInfo)){
         if (!teams[key]){
           if (orphans[key]) {
             orphans[key].push(value);
@@ -183,12 +183,11 @@ readXlsxFile(path).then(async(rows) => {
         }
       }
 
-      // hacemos equipos provicionales de huerfanos
-      for(const[key, value]of Object.entries(userInfo)){
+      //! Equipos Huerfanos
+      for(const[key, value] of Object.entries(userInfo)){
         if (orphans[key]){
         // itera por cada objeto (entry) de cada persona
           value.forEach((entry) => {
-              console.log(key);
               // dentro de ese proj(entry) itera por cada usuario
                 projInfo[entry.projectname].forEach((userInProj) => { 
                   if (projInfo[entry.projectname].length > 1){
@@ -237,7 +236,7 @@ readXlsxFile(path).then(async(rows) => {
         }
       }
       // console.log(orphans);
-      console.log(orphanTeams);
+      // console.log(orphanTeams);
 
       // variables auxiliares
       let periodSemester = 'SepFeb';
@@ -246,24 +245,29 @@ readXlsxFile(path).then(async(rows) => {
       /! Agregar a tablas !/
       
       // Evaluation_Periods
-      //TODO: cambiar a que sea loop no nadamas una ves CREO idk
       const tempPer = await Evaluation_Period.create({semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: true});
-      const period = new EvaluationPeriodClass(periodSemester, evaluationYear, hoursToComplete, tempPer.id, false);
-      
       
       // Employees
-      let is_orphan;
+      let assigned;
+      let email = ['A00827097@tec.mx', 'A00827008@tec.mx', 'A00829404@tec.mx', 'A00827044@tec.mx', 'A00827939@tec.mx'];
+      console.log(email[0]);
+      console.log(email[1]);
+      console.log(email[2]);
+      console.log(email[3]);
+      console.log(email[4]);
+      let emailCount = 0;
       for(const[key, value] of Object.entries(userInfo)){
-        if (!orphans[key]){
-          is_orphan = true;
+        if (!orphans[key]){ // if key is not in orphans
+          assigned = true;
         } else {
-          is_orphan = false;
+          assigned = false;
         }
         
-        const tempEmp = await Employee.create({is_assigned: is_orphan, email: '', employee_name: key, is_HR: 0});
+        
+        const tempEmp = await Employee.create({is_assigned: assigned, email: '', employee_name: key, is_HR: 0});
         
         // Teams
-        const tempTeam = await Team.create({id_employee: tempEmp.id, id_period: tempPer.id, approved_HR: 0, approved_Emp: 0});
+        const tempTeam = await Team.create({id_employee: tempEmp.id, id_period: tempPer.id, approved_HR: 0, approved_Emp: 0, is_team_orphan: !assigned});
       }
 
       // se necesita crear uno NA por que hay veces donde no hay líder
@@ -332,25 +336,43 @@ readXlsxFile(path).then(async(rows) => {
             teamRole = 1; // peer
           }
 
-          const tempEmpTeam = await Employee_Team.create({role_member: teamRole, status_member: teamRole, id_employee: empUser.id, id_team: teamKey.id}); 
+          const tempEmpTeam = await Employee_Team.create({role_member: teamRole, status_member: 0, id_employee: empUser.id, id_team: teamKey.id}); 
         })
       }
 
-      // Equipos Huerfanos (nombreEq, idEq, nombreEmp, idEmp, rol)
+      // Orphans
+      let contOrphanTeam = 0;
       for(const[key, value] of Object.entries(orphanTeams)) {
-        const userTeamName = await Employee.findOne({ where: {employee_name: key}});
         if (orphanTeams[key].length > 1){
           value.forEach(async(user) => {
-            const teamEmp = await Employee.findOne({where: {employee_name: user.username}});
+            const keyEmp = await Employee.findOne({ where: {employee_name: key}});
+            const keyTeam = await Team.findOne({where: {id_employee: keyEmp.id}});
+            const userEmp = await Employee.findOne({ where: {employee_name: user.username}});
+
+            if (keyEmp.employee_name == user.projectlead){
+              teamRole = 2; // team
+            } else if (user.role == 'Leader'){
+              teamRole = 0; // leader
+            } else if (user.role == 'Peer') {
+              teamRole = 1; // peer
+            }
+
+            contOrphanTeam = contOrphanTeam + 1
+            let aux = {id: contOrphanTeam, role_member: teamRole, status_member: 0, id_employee: userEmp.id, id_team: keyTeam.id};
+            if(orphanJson.length == 0){
+              orphanJson = [aux];
+            } else {
+              orphanJson.push(aux);
+            }
+            //console.log(orphanJson);
           })
-        } else {
-          const teamEmp = await Employee.findOne({where: {employee_name: value}});
-          let arr = {userTeamName: 'test'};
+          //console.log(orphanJson);
         }
         
       }
-
-
+      // console.log("holaholaholaholaholaholaholaholaholahola")
+      // console.log(orphanJson);
+      // console.log(orphans);
 
     });
 
@@ -375,8 +397,7 @@ const postMotive = async(req, res) => {
 
 // la usamos en Consultar Equipos
 const getEmployees = async (req, res) => {
-  const employees = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT}) // ! query goes here <-
-  console.log(employees);
+  const employees = await db.sequelize.query(`select * from Employees`, {type: QueryTypes.SELECT})
   res.send(employees);
 };
 
@@ -413,13 +434,17 @@ const getRequests = async (req, res) => {
 const getHasUploaded = async (req, res) => {
   const hasU = await db.sequelize.query(`select has_uploaded from Evaluation_Periods where evaluation_year='2021-2022' and semester='SepFeb'`, {type: QueryTypes.SELECT});
   res.send(hasU);
+};
 
-}
+const getOrphanEmployees = async (req, res) => {
+  const orphans = await db.sequalize.query(`select * from Employees where is_assigned = 0 and employee_name != 'NA'`, {type: QueryTypes.SELECT})
+  res.send(orphans);
+};
 
 const requestAdd = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status`, 
-  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status }})
+  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
   res.status(200).send({message: "post request successful"});
 	} 
 
@@ -437,6 +462,7 @@ module.exports = {
   getProjects,
   getRequests,
   getHasUploaded,
+  getOrphanEmployees,
   requestAdd: requestAdd
 };
 
