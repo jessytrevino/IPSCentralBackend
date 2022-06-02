@@ -20,6 +20,7 @@ let routes = (app) => {
     router.post("/requestAdd", excelController.requestAdd);
     router.post("/removeHR", excelController.removeHR);
     router.post("/approveHR", excelController.approveHR);
+    router.post("/requestRemove", excelController.requestRemove);
 
 
     // router.route('/requestAdd').post((request, response) => {
