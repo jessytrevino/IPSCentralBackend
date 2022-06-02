@@ -235,7 +235,9 @@ const upload = async (req, res) => {
     let periodSemester = 'SepFeb';
     let evaluationYear = '2021-2022';
     const tempPer = await Evaluation_Period.create({ semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: true });
-
+    //const tempPer = await Evaluation_Period.findOne({where: {}})
+    //const tempPer = await db.sequelize.query(`select top(1) * from Evaluation_Periods order by id desc`, { type: QueryTypes.SELECT })
+    //console.log(tempPer.id);
     // Employees
     let assigned;
     for (const [key, value] of Object.entries(userInfo)) {
