@@ -413,8 +413,10 @@ const getOrphanTeams = async (req, res) => {
 
 const requestAdd = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
-  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  //const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
+  //{replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title, :id_team`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title, id_team: req.body.id_team }})
   res.status(200).send({message: "post request successful"});
 }; 
 
