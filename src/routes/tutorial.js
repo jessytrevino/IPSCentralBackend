@@ -21,6 +21,7 @@ let routes = (app) => {
     router.post("/removeHR", excelController.removeHR);
     router.post("/approveHR", excelController.approveHR);
     router.post("/requestRemove", excelController.requestRemove);
+    router.post("/declineRequest", excelController.declineRequest);
 
 
     // router.route('/requestAdd').post((request, response) => {

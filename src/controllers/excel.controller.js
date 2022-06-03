@@ -439,6 +439,13 @@ const requestRemove = async(req, res) => {
   res.status(200).send({message: "post request successful"});
 }; 
 
+const declineRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC DECLINEREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
+
 
 
 
@@ -458,7 +465,8 @@ module.exports = {
   requestAdd: requestAdd,
   removeHR: removeHR,
   approveHR: approveHR,
-  requestRemove: requestRemove
+  requestRemove: requestRemove,
+  declineRequest: declineRequest
 };
 
 
