@@ -232,12 +232,8 @@ const upload = async (req, res) => {
     /! Agregar a tablas !/
 
     // Evaluation_Periods
-    let periodSemester = 'SepFeb';
-    let evaluationYear = '2021-2022';
-    const tempPer = await Evaluation_Period.create({ semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: true });
-    //const tempPer = await Evaluation_Period.findOne({where: {}})
-    //const tempPer = await db.sequelize.query(`select top(1) * from Evaluation_Periods order by id desc`, { type: QueryTypes.SELECT })
-    //console.log(tempPer.id);
+    const tempPer = await db.sequelize.query(`select top(1) * from Evaluation_Periods order by id desc`, { type: QueryTypes.SELECT })
+    
     // Employees
     let assigned;
     for (const [key, value] of Object.entries(userInfo)) {
@@ -250,7 +246,7 @@ const upload = async (req, res) => {
       const tempEmp = await Employee.create({ is_assigned: assigned, email: '', employee_name: key, is_HR: 0 });
 
       // Teams
-      const tempTeam = await Team.create({ id_employee: tempEmp.id, id_period: tempPer.id, approved_HR: 0, approved_Emp: 0, is_team_orphan: !assigned });
+      const tempTeam = await Team.create({ id_employee: tempEmp.id, id_period: tempPer[0].id, approved_HR: 0, approved_Emp: 0, is_team_orphan: !assigned });
     }
 
     // se necesita crear uno NA por que hay veces donde no hay líder
@@ -267,7 +263,7 @@ const upload = async (req, res) => {
         }
 
         const emp = await Employee.findOne({ where: { employee_name: value } });
-        const tempProj = await Project.create({ project_name: key, id_employee_leader: emp.id, id_period: tempPer.id });
+        const tempProj = await Project.create({ project_name: key, id_employee_leader: emp.id, id_period: tempPer[0].id });
       }
     }
 
