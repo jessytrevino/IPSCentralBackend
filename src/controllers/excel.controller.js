@@ -63,9 +63,9 @@ const upload = async (req, res) => {
   let orphans = [];
   let hoursToComplete = 40;
 
-  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
+  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
-  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -316,7 +316,7 @@ const upload = async (req, res) => {
         } else if (user.role == 'Peer') {
           teamRole = 1; // peer
         }
-
+        //console.log(teamKey.id);
         const tempEmpTeam = await Employee_Team.create({ role_member: teamRole, status_member: 0, id_employee: empUser.id, id_team: teamKey.id });
       })
     }
@@ -386,7 +386,7 @@ const getProjects = async (req, res) => {
 };
 
 const getRequests = async (req, res) => {
-  const request = await db.sequelize.query(`select * from Requests`, { type: QueryTypes.SELECT })
+  const request = await db.sequelize.query(`select * from Requests where status=1 or status=2`, { type: QueryTypes.SELECT })
   res.send(request);
 };
 
@@ -409,8 +409,10 @@ const getOrphanTeams = async (req, res) => {
 
 const requestAdd = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
-  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  //const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
+  //{replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title, :id_team`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title, id_team: req.body.id_team }})
   res.status(200).send({message: "post request successful"});
 }; 
 
@@ -427,6 +429,27 @@ const approveHR = async(req, res) => {
   {replacements: { id: req.body.id }})
   res.status(200).send({message: "approve by HR successful"});
 };
+
+const requestRemove = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC REMOVEREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title, :id_employee_teams`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title, id_employee_teams: req.body.id_employee_teams }})
+  res.status(200).send({message: "post request successful"});
+}; 
+
+const declineRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC DECLINEREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
+
+const acceptRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ACCEPTREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
 
 
 
@@ -446,7 +469,10 @@ module.exports = {
   getOrphanTeams,
   requestAdd: requestAdd,
   removeHR: removeHR,
-  approveHR: approveHR
+  approveHR: approveHR,
+  requestRemove: requestRemove,
+  declineRequest: declineRequest,
+  acceptRequest: acceptRequest
 };
 
 
