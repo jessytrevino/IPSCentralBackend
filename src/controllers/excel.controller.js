@@ -390,7 +390,7 @@ const getProjects = async (req, res) => {
 };
 
 const getRequests = async (req, res) => {
-  const request = await db.sequelize.query(`select * from Requests`, { type: QueryTypes.SELECT })
+  const request = await db.sequelize.query(`select * from Requests where status=1 or status=2`, { type: QueryTypes.SELECT })
   res.send(request);
 };
 
@@ -448,6 +448,13 @@ const declineRequest = async(req, res) => {
   res.status(200).send({message: "decline request successful"});
 }; 
 
+const acceptRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ACCEPTREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
+
 
 
 
@@ -468,7 +475,8 @@ module.exports = {
   removeHR: removeHR,
   approveHR: approveHR,
   requestRemove: requestRemove,
-  declineRequest: declineRequest
+  declineRequest: declineRequest,
+  acceptRequest: acceptRequest
 };
 
 
