@@ -418,8 +418,8 @@ const requestAdd = async(req, res) => {
 
 const removeHR = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC REMOVEHR :id`, 
-  {replacements: { id: req.body.id }})
+  const resultado = await db.sequelize.query(`EXEC REMOVEHR :id, :idReqBy, :idRemove`, 
+  {replacements: { id: req.body.id, idReqBy: req.body.idReqBy, idRemove: req.body.idRemove }})
   res.status(200).send({message: "remove by HR successful"});
 };
 
