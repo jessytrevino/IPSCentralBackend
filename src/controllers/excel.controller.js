@@ -65,7 +65,7 @@ const upload = async (req, res) => {
 
   let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
-  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+ // let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -232,12 +232,8 @@ const upload = async (req, res) => {
     /! Agregar a tablas !/
 
     // Evaluation_Periods
-    let periodSemester = 'SepFeb';
-    let evaluationYear = '2021-2022';
-    const tempPer = await Evaluation_Period.create({ semester: periodSemester, evaluation_year: evaluationYear, hours_to_complete: hoursToComplete, has_uploaded: true });
-    //const tempPer = await Evaluation_Period.findOne({where: {}})
-    //const tempPer = await db.sequelize.query(`select top(1) * from Evaluation_Periods order by id desc`, { type: QueryTypes.SELECT })
-    //console.log(tempPer.id);
+    const tempPer = await db.sequelize.query(`select top(1) * from Evaluation_Periods order by id desc`, { type: QueryTypes.SELECT })
+    
     // Employees
     let assigned;
     for (const [key, value] of Object.entries(userInfo)) {
@@ -250,7 +246,7 @@ const upload = async (req, res) => {
       const tempEmp = await Employee.create({ is_assigned: assigned, email: '', employee_name: key, is_HR: 0 });
 
       // Teams
-      const tempTeam = await Team.create({ id_employee: tempEmp.id, id_period: tempPer.id, approved_HR: 0, approved_Emp: 0, is_team_orphan: !assigned });
+      const tempTeam = await Team.create({ id_employee: tempEmp.id, id_period: tempPer[0].id, approved_HR: 0, approved_Emp: 0, is_team_orphan: !assigned });
     }
 
     // se necesita crear uno NA por que hay veces donde no hay líder
@@ -267,7 +263,7 @@ const upload = async (req, res) => {
         }
 
         const emp = await Employee.findOne({ where: { employee_name: value } });
-        const tempProj = await Project.create({ project_name: key, id_employee_leader: emp.id, id_period: tempPer.id });
+        const tempProj = await Project.create({ project_name: key, id_employee_leader: emp.id, id_period: tempPer[0].id });
       }
     }
 
@@ -320,7 +316,7 @@ const upload = async (req, res) => {
         } else if (user.role == 'Peer') {
           teamRole = 1; // peer
         }
-
+        //console.log(teamKey.id);
         const tempEmpTeam = await Employee_Team.create({ role_member: teamRole, status_member: 0, id_employee: empUser.id, id_team: teamKey.id });
       })
     }
@@ -390,7 +386,7 @@ const getProjects = async (req, res) => {
 };
 
 const getRequests = async (req, res) => {
-  const request = await db.sequelize.query(`select * from Requests`, { type: QueryTypes.SELECT })
+  const request = await db.sequelize.query(`select * from Requests where status=1 or status=2`, { type: QueryTypes.SELECT })
   res.send(request);
 };
 
@@ -413,8 +409,10 @@ const getOrphanTeams = async (req, res) => {
 
 const requestAdd = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
-  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  //const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title`, 
+  //{replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title }})
+  const resultado = await db.sequelize.query(`EXEC ADDREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title, :id_team`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title, id_team: req.body.id_team }})
   res.status(200).send({message: "post request successful"});
 }; 
 
@@ -431,6 +429,27 @@ const approveHR = async(req, res) => {
   {replacements: { id: req.body.id }})
   res.status(200).send({message: "approve by HR successful"});
 };
+
+const requestRemove = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC REMOVEREQUEST :motive, :id_emp_mod, :type, :id_emp_req, :status, :title, :id_employee_teams`, 
+  {replacements: { motive: req.body.motive, id_emp_mod: req.body.id_emp_mod, type: req.body.type, id_emp_req: req.body.id_emp_req, status: req.body.status, title: req.body.title, id_employee_teams: req.body.id_employee_teams }})
+  res.status(200).send({message: "post request successful"});
+}; 
+
+const declineRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC DECLINEREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
+
+const acceptRequest = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ACCEPTREQUEST :id_request, :id_employee_teams, :type`, 
+  {replacements: { id_request: req.body.id_request, id_employee_teams: req.body.id_employee_teams, type: req.body.type }})
+  res.status(200).send({message: "decline request successful"});
+}; 
 
 
 
@@ -450,7 +469,10 @@ module.exports = {
   getOrphanTeams,
   requestAdd: requestAdd,
   removeHR: removeHR,
-  approveHR: approveHR
+  approveHR: approveHR,
+  requestRemove: requestRemove,
+  declineRequest: declineRequest,
+  acceptRequest: acceptRequest
 };
 
 

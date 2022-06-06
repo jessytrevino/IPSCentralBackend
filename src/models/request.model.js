@@ -34,6 +34,13 @@ module.exports = (sequelize, Sequelize) => {
         },
         title: {
             type: Sequelize.STRING
+        },
+        id_employee_teams: {
+            type: Sequelize.INTEGER,
+            references: {
+                model: 'Employee_Team',
+                key: 'id'
+            }
         }
     }, {
         timestamps: false
