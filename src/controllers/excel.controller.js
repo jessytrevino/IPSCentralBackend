@@ -63,9 +63,9 @@ const upload = async (req, res) => {
   let orphans = [];
   let hoursToComplete = 40;
 
-  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
+  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
-  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -275,19 +275,20 @@ const upload = async (req, res) => {
 
     for (const [key, value] of Object.entries(projInfo)) {
       value.forEach(async (user) => {
+        const emp = await Employee.findOne({ where: { employee_name: user.username } });
+        const proj = await Project.findOne({ where: { project_name: key } });
+
         if (user.role == "Leader") {
           projRole = 1;
         } else {
           projRole = 0;
         }
-        if (user.totalHrs >= hoursToComplete) {
+
+        if (user.totalHrs >= tempPer[0].hours_to_complete) {
           didComplete = 1;
         } else {
           didComplete = 0;
         }
-
-        const emp = await Employee.findOne({ where: { employee_name: user.username } });
-        const proj = await Project.findOne({ where: { project_name: key } });
 
         const tempEmpProj = Employee_Project.create({
           did_complete: didComplete,
