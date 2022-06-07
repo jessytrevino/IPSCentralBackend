@@ -63,9 +63,9 @@ const upload = async (req, res) => {
   let orphans = [];
   let hoursToComplete = 40;
 
-  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
+  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
-  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -129,6 +129,7 @@ const upload = async (req, res) => {
     // iteramos todo user info 
     //key = nombre 
     //value = todo el obj de user
+    let count = 1;
     for (const [key, value] of Object.entries(userInfo)) {
       // itera por cada objeto (entry) de cada persona
       value.forEach((entry) => {
@@ -143,10 +144,11 @@ const upload = async (req, res) => {
                 teams[key] = [userInProj];
               }
               else {
-                // checamos si userInProj ya esta en el equipo con el mismo rol
-                if (teams[key].includes(userInProj.username)) {
+                let evaluatee = teams[key].find(e => e.username == userInProj.username);
+                if (evaluatee != undefined) {
                   // si rol es igual entonces no se agrega
-                  if (teams[key].role != userInProj.role) {
+                  let index = teams[key].findIndex(e => e.username == userInProj.username);
+                  if (teams[key][index].role != userInProj.role) {
                     teams[key].push(userInProj);
                   }
                 }
@@ -158,7 +160,7 @@ const upload = async (req, res) => {
             }
           })
         }
-      })
+      }) 
     }
 
     // agregamos a los usuarios que no tienen equipo a lista de huerfanos
