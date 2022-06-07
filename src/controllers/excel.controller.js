@@ -475,6 +475,13 @@ const addUnassigned = async(req, res) => {
   res.status(200).send({message: "add unassigned successful"});
 };
 
+const createTeamUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC CREATETEAMUNASSIGNED :id_team`, 
+  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
+  res.status(200).send({message: "add unassigned successful"});
+};
+
 
 
 
