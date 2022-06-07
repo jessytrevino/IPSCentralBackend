@@ -467,6 +467,13 @@ const removeUnassigned = async(req, res) => {
   res.status(200).send({message: "remove unassigned successful"});
 };
 
+const addUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDUNASSIGNED :id_emp_mod, :id_team`, 
+  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
+  res.status(200).send({message: "add unassigned successful"});
+};
+
 
 
 
@@ -490,7 +497,8 @@ module.exports = {
   declineRequest: declineRequest,
   acceptRequest: acceptRequest,
   addHR: addHR,
-  removeUnassigned: removeUnassigned
+  removeUnassigned: removeUnassigned,
+  addUnassigned: addUnassigned
 };
 
 
