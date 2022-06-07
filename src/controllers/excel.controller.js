@@ -129,6 +129,7 @@ const upload = async (req, res) => {
     // iteramos todo user info 
     //key = nombre 
     //value = todo el obj de user
+    let count = 1;
     for (const [key, value] of Object.entries(userInfo)) {
       // itera por cada objeto (entry) de cada persona
       value.forEach((entry) => {
@@ -143,10 +144,11 @@ const upload = async (req, res) => {
                 teams[key] = [userInProj];
               }
               else {
-                // checamos si userInProj ya esta en el equipo con el mismo rol
-                if (teams[key].includes(userInProj.username)) {
+                let evaluatee = teams[key].find(e => e.username == userInProj.username);
+                if (evaluatee != undefined) {
                   // si rol es igual entonces no se agrega
-                  if (teams[key].role != userInProj.role) {
+                  let index = teams[key].findIndex(e => e.username == userInProj.username);
+                  if (teams[key][index].role != userInProj.role) {
                     teams[key].push(userInProj);
                   }
                 }
@@ -158,7 +160,7 @@ const upload = async (req, res) => {
             }
           })
         }
-      })
+      }) 
     }
 
     // agregamos a los usuarios que no tienen equipo a lista de huerfanos
@@ -418,8 +420,8 @@ const requestAdd = async(req, res) => {
 
 const removeHR = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC REMOVEHR :id`, 
-  {replacements: { id: req.body.id }})
+  const resultado = await db.sequelize.query(`EXEC REMOVEHR :id, :idReqBy, :idRemove`, 
+  {replacements: { id: req.body.id, idReqBy: req.body.idReqBy, idRemove: req.body.idRemove }})
   res.status(200).send({message: "remove by HR successful"});
 };
 
@@ -451,6 +453,13 @@ const acceptRequest = async(req, res) => {
   res.status(200).send({message: "decline request successful"});
 }; 
 
+const addHR = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDHR :id_emp_mod, :id_team`, 
+  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
+  res.status(200).send({message: "add by HR successful"});
+};
+
 
 
 
@@ -472,7 +481,8 @@ module.exports = {
   approveHR: approveHR,
   requestRemove: requestRemove,
   declineRequest: declineRequest,
-  acceptRequest: acceptRequest
+  acceptRequest: acceptRequest,
+  addHR: addHR
 };
 
 
