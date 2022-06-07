@@ -1,8 +1,8 @@
 module.exports = {
   HOST: "localhost",
   USER: "sa",
-  PASSWORD: "TN6SZUn*",
-  DB: "IPSCentral",
+  PASSWORD: "Fempower-2022",
+  DB: "ipsCentralDB",
   dialect: "mssql",
   pool: {
     max: 5,

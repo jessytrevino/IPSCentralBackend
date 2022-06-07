@@ -24,20 +24,9 @@ let routes = (app) => {
     router.post("/declineRequest", excelController.declineRequest);
     router.post("/acceptRequest", excelController.acceptRequest);
     router.post("/addHR", excelController.addHR);
-
-
-    // router.route('/requestAdd').post((request, response) => {
-    //     let add_request = {...request.body}
-    //     excelController.AddRequest(add_request).then(result => {
-    //     response.json(result[0]);
-      
-    //     })
-      
-    //   })
+    router.post("/removeUnassigned", excelController.removeUnassigned);
 
     app.use("/api", router);
-
-   
     
 };
 

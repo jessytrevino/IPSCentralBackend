@@ -63,9 +63,9 @@ const upload = async (req, res) => {
   let orphans = [];
   let hoursToComplete = 40;
 
-  let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
+  //let path = '/Users/robertasaldana/Desktop/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
-  //let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -460,6 +460,13 @@ const addHR = async(req, res) => {
   res.status(200).send({message: "add by HR successful"});
 };
 
+const removeUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC REMOVEUNASSIGNED :id`, 
+  {replacements: { id: req.body.id }})
+  res.status(200).send({message: "remove unassigned successful"});
+};
+
 
 
 
@@ -482,7 +489,8 @@ module.exports = {
   requestRemove: requestRemove,
   declineRequest: declineRequest,
   acceptRequest: acceptRequest,
-  addHR: addHR
+  addHR: addHR,
+  removeUnassigned: removeUnassigned
 };
 
 
