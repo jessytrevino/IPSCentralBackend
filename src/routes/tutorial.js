@@ -23,6 +23,7 @@ let routes = (app) => {
     router.post("/requestRemove", excelController.requestRemove);
     router.post("/declineRequest", excelController.declineRequest);
     router.post("/acceptRequest", excelController.acceptRequest);
+    router.post("/addHR", excelController.addHR);
 
 
     // router.route('/requestAdd').post((request, response) => {

@@ -451,6 +451,13 @@ const acceptRequest = async(req, res) => {
   res.status(200).send({message: "decline request successful"});
 }; 
 
+const addHR = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDHR :id_emp_mod, :id_team`, 
+  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
+  res.status(200).send({message: "add by HR successful"});
+};
+
 
 
 
@@ -472,7 +479,8 @@ module.exports = {
   approveHR: approveHR,
   requestRemove: requestRemove,
   declineRequest: declineRequest,
-  acceptRequest: acceptRequest
+  acceptRequest: acceptRequest,
+  addHR: addHR
 };
 
 
