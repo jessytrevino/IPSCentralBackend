@@ -342,9 +342,7 @@ const upload = async (req, res) => {
           } else if (user.role == 'Peer') {
             teamRole = 1; // peer
           }
-
           const tempOrphanTeam = await Orphan_Team.create({ role_member: teamRole, status_member: 0, id_employee: userEmp.id, id_team: keyTeam.id });
-
         })
       }
     }
@@ -360,6 +358,11 @@ const upload = async (req, res) => {
 // la usamos en Consultar Equipos
 const getEmployees = async (req, res) => {
   const employees = await db.sequelize.query(`select * from Employees where is_assigned = 1`, { type: QueryTypes.SELECT })
+  res.send(employees);
+};
+
+const getAllEmployees = async (req, res) => {
+  const employees = await db.sequelize.query(`select * from Employees`, { type: QueryTypes.SELECT })
   res.send(employees);
 };
 
@@ -489,6 +492,7 @@ const createTeamUnassigned = async(req, res) => {
 module.exports = {
   upload,
   getEmployees,
+  getAllEmployees,
   getTeams,
   getEmployeeProjects,
   getEmployeeTeams,
