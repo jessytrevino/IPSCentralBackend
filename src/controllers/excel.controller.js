@@ -275,19 +275,20 @@ const upload = async (req, res) => {
 
     for (const [key, value] of Object.entries(projInfo)) {
       value.forEach(async (user) => {
+        const emp = await Employee.findOne({ where: { employee_name: user.username } });
+        const proj = await Project.findOne({ where: { project_name: key } });
+
         if (user.role == "Leader") {
           projRole = 1;
         } else {
           projRole = 0;
         }
-        if (user.totalHrs >= hoursToComplete) {
+
+        if (user.totalHrs >= tempPer[0].hours_to_complete) {
           didComplete = 1;
         } else {
           didComplete = 0;
         }
-
-        const emp = await Employee.findOne({ where: { employee_name: user.username } });
-        const proj = await Project.findOne({ where: { project_name: key } });
 
         const tempEmpProj = Employee_Project.create({
           did_complete: didComplete,
@@ -341,9 +342,7 @@ const upload = async (req, res) => {
           } else if (user.role == 'Peer') {
             teamRole = 1; // peer
           }
-
           const tempOrphanTeam = await Orphan_Team.create({ role_member: teamRole, status_member: 0, id_employee: userEmp.id, id_team: keyTeam.id });
-
         })
       }
     }
@@ -359,6 +358,11 @@ const upload = async (req, res) => {
 // la usamos en Consultar Equipos
 const getEmployees = async (req, res) => {
   const employees = await db.sequelize.query(`select * from Employees where is_assigned = 1`, { type: QueryTypes.SELECT })
+  res.send(employees);
+};
+
+const getAllEmployees = async (req, res) => {
+  const employees = await db.sequelize.query(`select * from Employees`, { type: QueryTypes.SELECT })
   res.send(employees);
 };
 
@@ -460,6 +464,34 @@ const addHR = async(req, res) => {
   res.status(200).send({message: "add by HR successful"});
 };
 
+const removeUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC REMOVEUNASSIGNED :id`, 
+  {replacements: { id: req.body.id }})
+  res.status(200).send({message: "remove unassigned successful"});
+};
+
+const addUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDUNASSIGNED :id_emp_mod, :id_team`, 
+  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
+  res.status(200).send({message: "add unassigned successful"});
+};
+
+const createTeamUnassigned = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC CREATETEAMUNASSIGNED :id_team, :id_employee`, 
+  {replacements: {  id_team: req.body.id_team, id_employee: req.body.id_employee }})
+  res.status(200).send({message: "create team unassigned successful"});
+};
+
+const addUnassignedToTeam = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDUNASSIGNEDTOTEAM :role_member, :id_employeeU, :id_employee`, 
+  {replacements: {  role_member: req.body.role_member, id_employeeU: req.body.id_employeeU, id_employee: req.body.id_employee }})
+  res.status(200).send({message: "create team unassigned successful"});
+};
+
 
 
 
@@ -467,6 +499,7 @@ const addHR = async(req, res) => {
 module.exports = {
   upload,
   getEmployees,
+  getAllEmployees,
   getTeams,
   getEmployeeProjects,
   getEmployeeTeams,
@@ -482,7 +515,11 @@ module.exports = {
   requestRemove: requestRemove,
   declineRequest: declineRequest,
   acceptRequest: acceptRequest,
-  addHR: addHR
+  addHR: addHR,
+  removeUnassigned: removeUnassigned,
+  addUnassigned: addUnassigned,
+  createTeamUnassigned: createTeamUnassigned,
+  addUnassignedToTeam: addUnassignedToTeam
 };
 
 

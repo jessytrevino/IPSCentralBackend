@@ -7,6 +7,7 @@ const upload = require("../middleware/upload");
 let routes = (app) => {
     router.post("/upload", upload.single("excel"), excelController.upload);
     router.get("/getEmployees", excelController.getEmployees);
+    router.get("/getAllEmployees", excelController.getAllEmployees);
     router.get("/getTeams", excelController.getTeams);
     router.get("/getEmployeeProjects", excelController.getEmployeeProjects);
     router.get("/getEmployeeTeams", excelController.getEmployeeTeams);
@@ -24,20 +25,12 @@ let routes = (app) => {
     router.post("/declineRequest", excelController.declineRequest);
     router.post("/acceptRequest", excelController.acceptRequest);
     router.post("/addHR", excelController.addHR);
-
-
-    // router.route('/requestAdd').post((request, response) => {
-    //     let add_request = {...request.body}
-    //     excelController.AddRequest(add_request).then(result => {
-    //     response.json(result[0]);
-      
-    //     })
-      
-    //   })
+    router.post("/removeUnassigned", excelController.removeUnassigned);
+    router.post("/addUnassigned", excelController.addUnassigned);
+    router.post("/createTeamUnassigned", excelController.createTeamUnassigned);
+    router.post("/addUnassignedToTeam", excelController.addUnassignedToTeam);
 
     app.use("/api", router);
-
-   
     
 };
 
