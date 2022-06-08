@@ -63,9 +63,9 @@ const upload = async (req, res) => {
   let orphans = [];
   let hoursToComplete = 40;
 
-  let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
+  //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx'
   //let path = '/Users/jessicatrevino/Desktop/itesm/TC3005/reto/IPSCentralBackend/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
- // let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
+  let path = '/Users/melissa/Documents/tec/back6/IPSCentralBackend/src/resources/static/assets/uploads/equipos.xlsx';
 
   readXlsxFile(path).then(async (rows) => {
     //se salta los headers
@@ -492,6 +492,13 @@ const addUnassignedToTeam = async(req, res) => {
   res.status(200).send({message: "create team unassigned successful"});
 };
 
+const approveEmp = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC APPROVEEMP :id`, 
+  {replacements: { id: req.body.id }})
+  res.status(200).send({message: "approve by Emp successful"});
+};
+
 
 
 
@@ -519,7 +526,8 @@ module.exports = {
   removeUnassigned: removeUnassigned,
   addUnassigned: addUnassigned,
   createTeamUnassigned: createTeamUnassigned,
-  addUnassignedToTeam: addUnassignedToTeam
+  addUnassignedToTeam: addUnassignedToTeam,
+  approveEmp: approveEmp
 };
 
 
