@@ -480,9 +480,16 @@ const addUnassigned = async(req, res) => {
 
 const createTeamUnassigned = async(req, res) => {
 	//console.log(req.body);	
-  const resultado = await db.sequelize.query(`EXEC CREATETEAMUNASSIGNED :id_team`, 
-  {replacements: { id_emp_mod: req.body.id_emp_mod, id_team: req.body.id_team }})
-  res.status(200).send({message: "add unassigned successful"});
+  const resultado = await db.sequelize.query(`EXEC CREATETEAMUNASSIGNED :id_team, :id_employee`, 
+  {replacements: {  id_team: req.body.id_team, id_employee: req.body.id_employee }})
+  res.status(200).send({message: "create team unassigned successful"});
+};
+
+const addUnassignedToTeam = async(req, res) => {
+	//console.log(req.body);	
+  const resultado = await db.sequelize.query(`EXEC ADDUNASSIGNEDTOTEAM :role_member, :id_employeeU, :id_employee`, 
+  {replacements: {  role_member: req.body.role_member, id_employeeU: req.body.id_employeeU, id_employee: req.body.id_employee }})
+  res.status(200).send({message: "create team unassigned successful"});
 };
 
 
@@ -511,7 +518,8 @@ module.exports = {
   addHR: addHR,
   removeUnassigned: removeUnassigned,
   addUnassigned: addUnassigned,
-  createTeamUnassigned: createTeamUnassigned
+  createTeamUnassigned: createTeamUnassigned,
+  addUnassignedToTeam: addUnassignedToTeam
 };
 
 

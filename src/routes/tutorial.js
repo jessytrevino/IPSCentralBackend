@@ -28,6 +28,7 @@ let routes = (app) => {
     router.post("/removeUnassigned", excelController.removeUnassigned);
     router.post("/addUnassigned", excelController.addUnassigned);
     router.post("/createTeamUnassigned", excelController.createTeamUnassigned);
+    router.post("/addUnassignedToTeam", excelController.addUnassignedToTeam);
 
     app.use("/api", router);
     
